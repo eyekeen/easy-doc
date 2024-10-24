@@ -22,7 +22,7 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('student.dashboard')">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
@@ -34,10 +34,28 @@ const showingNavigationDropdown = ref(false);
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('student.dashboard')"
+                                    :active="route().current('student.dashboard')"
                                 >
-                                    Dashboard
+                                    Мои заявки(студент)
+                                </NavLink>
+                                <NavLink
+                                    :href="route('student.send')"
+                                    :active="route().current('student.send')"
+                                >
+                                    Отправить заявку(студент)
+                                </NavLink>
+                                <NavLink
+                                    :href="route('methodologist.dashboard')"
+                                    :active="route().current('methodologist.dashboard')"
+                                >
+                                    Заявки от студентов(методист)
+                                </NavLink>
+                                <NavLink
+                                    :href="route('department.dashboard')"
+                                    :active="route().current('department.dashboard')"
+                                >
+                                    Заявки от студентов(отдел)
                                 </NavLink>
                             </div>
                         </div>
@@ -141,8 +159,8 @@ const showingNavigationDropdown = ref(false);
                 >
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            :href="route('student.dashboard')"
+                            :active="route().current('student.dashboard')"
                         >
                             Dashboard
                         </ResponsiveNavLink>

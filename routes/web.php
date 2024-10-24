@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,9 +15,26 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/stundet/dashboard', [StudentController::class, 'index'])
+        ->middleware(['auth'])->name('student.dashboard');
+
+// Route::get('/stundet/dashboard', function () {
+//     return Inertia::render('Student/Dashboard');
+// })->middleware(['auth'])->name('student.dashboard');
+
+Route::get('/stundet/send', function () {
+    return Inertia::render('Student/Send');
+})->middleware(['auth'])->name('student.send');
+
+
+Route::get('/methodologist/dashboard', function () {
+    return Inertia::render('Methodologist/Dashboard');
+})->middleware(['auth'])->name('methodologist.dashboard');
+
+
+Route::get('/department/dashboard', function () {
+    return Inertia::render('Department/Dashboard');
+})->middleware(['auth'])->name('department.dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,4 +42,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
