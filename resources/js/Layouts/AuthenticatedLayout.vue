@@ -57,6 +57,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Заявки от студентов(отдел)
                                 </NavLink>
+                                <NavLink
+                                    :href="route('upload.index')"
+                                    :active="route().current('upload.index')"
+                                >
+                                    Upload file
+                                </NavLink>
                             </div>
                         </div>
 

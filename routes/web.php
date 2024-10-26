@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,13 +19,8 @@ Route::get('/', function () {
 Route::get('/stundet/dashboard', [StudentController::class, 'index'])
         ->middleware(['auth'])->name('student.dashboard');
 
-// Route::get('/stundet/dashboard', function () {
-//     return Inertia::render('Student/Dashboard');
-// })->middleware(['auth'])->name('student.dashboard');
-
-Route::get('/stundet/send', function () {
-    return Inertia::render('Student/Send');
-})->middleware(['auth'])->name('student.send');
+Route::get('/stundet/send', [StudentController::class, 'show'])->middleware(['auth'])->name('student.send');
+Route::post('/stundet/send', [StudentController::class, 'store'])->middleware(['auth'])->name('student.store');
 
 
 Route::get('/methodologist/dashboard', function () {
@@ -41,5 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/upload', [UploadController::class, 'index'])->name('upload.index')->middleware('auth');
+Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
 
 require __DIR__ . '/auth.php';
