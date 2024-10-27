@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MethodologistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UploadController;
@@ -23,9 +24,7 @@ Route::get('/stundet/send', [StudentController::class, 'show'])->middleware(['au
 Route::post('/stundet/send', [StudentController::class, 'store'])->middleware(['auth'])->name('student.store');
 
 
-Route::get('/methodologist/dashboard', function () {
-    return Inertia::render('Methodologist/Dashboard');
-})->middleware(['auth'])->name('methodologist.dashboard');
+Route::get('/methodologist/dashboard', [MethodologistController::class, 'index'])->middleware(['auth'])->name('methodologist.dashboard');
 
 
 Route::get('/department/dashboard', function () {
