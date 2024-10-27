@@ -8,11 +8,10 @@ use App\Models\Status;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Utilities\DocumentUtility;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Shared\File;
+
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class StudentController extends Controller
 {
@@ -38,26 +37,69 @@ class StudentController extends Controller
         $meth = $request->get('meth');
         $requiredData = $request->get('requiredData');
 
-        $template = DocumentTemplate::find($petition_id);
+        $filename = DocumentTemplate::find($petition_id);
 
-        $inputFilePath =  Storage::path($template->path); // Путь к входному документу
-        $file = IOFactory::load($inputFilePath);
+        $this->replaceAndSaveDocument($filename->path, $requiredData);
+    }
+
+    public function replaceAndSaveDocument($filename, array $replacements)
+    {
+        try {
+            $filePath = storage_path('app/public/' . $filename);
+
+            if (!file_exists($filePath)) {
+                throw new \Exception("Файл не найден: {$filePath}");
+            }
+
+            $document = IOFactory::load($filePath);
 
 
+            // Проверяем, содержит ли документ данные
+            if (count($document->getSections()) === 0) {
+                throw new \Exception('Документ пустой');
+            }
 
-        dd($file);
+            $file = $filePath;
+
+            $phpword = new TemplateProcessor($file);
+
+            $phpword->setValues($replacements);
 
 
-        $outputFilePath = storage_path('/documents/output.docx'); // Путь для сохранения обработанного документа
-
-        $replacements = [
-            '{NAME}' => 'Иван Иванов',
-            '{POSITION}' => 'Разработчик',
-            '{DATE}' => now()->format('d.m.Y'),
-        ];
-
-        DocumentUtility::doc_fill($inputFilePath, $outputFilePath, $requiredData);
-
-        return response()->download($outputFilePath, 'processed_document.docx');
+            
+            $outputDir = storage_path('app/public/documents/');
+            if (!file_exists($outputDir)) {
+                mkdir($outputDir, 0755, true);
+            }
+            
+            // Проверяем права доступа
+            if (!is_writable($outputDir)) {
+                throw new \Exception("Директория {$outputDir} недоступна для записи");
+            }
+            
+            $outputPath = $outputDir . '/document_' . time() . '.docx';
+            
+            try {
+                $writer = IOFactory::createWriter($document, 'Word2007');
+                $writer->save($outputPath);
+                \Log::info('Документ с заменами успешно сохранен', ['path' => $outputPath]);
+            } catch (\Exception $e) {
+                \Log::error("Ошибка при сохранении документа с заменами: " . $e->getMessage(), [
+                    'trace' => $e->getTraceAsString(),
+                    'path' => $outputPath,
+                ]);
+                throw $e;
+            }
+            
+            $phpword->saveAs($outputPath);
+            
+            return response()->download($outputPath, 'replaced_document.docx');
+        } catch (\Exception $e) {
+            \Log::error("Ошибка при загрузке или обработке документа: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'filename' => $filename,
+            ]);
+            return response()->json(['error' => 'Не удалось загрузить или обработать документ'], 500);
+        }
     }
 }

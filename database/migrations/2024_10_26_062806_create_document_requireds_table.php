@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('key');
             $table->string('value');
             $table->string('template_id');
+            $table->unsignedBigInteger('data_for');
             $table->timestamps();
         });
     }

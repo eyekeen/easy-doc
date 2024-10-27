@@ -17,8 +17,12 @@ var selectedFields = null
 watch(petition, () => {
   console.log(`petition ` + petition.value);
   selectedFields = computed(() => {
-    return props.required.filter(field => field.document_id === petition.value?.id)
+    return props.required.filter(field => field.template_id == petition.value)
   })
+
+  console.log(props.required);
+  console.log(selectedFields);
+  
 });
 
 watch(meth, () => {
