@@ -10,16 +10,35 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
-
+use App\Models\Document;
+use App\Models\Petition;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user()->id;
+
         $statuses = Status::all(['id', 'status']);
-        return Inertia::render('Student/Dashboard', ['statuses' => $statuses]);
+
+        $first_check = $this->getPetitions($user, 1);
+        $department = $this->getPetitions($user, 2);
+        $ready = $this->getPetitions($user, 3);
+        $revision = $this->getPetitions($user, 4);
+        $reject = $this->getPetitions($user, 5);
+
+        
+
+        return Inertia::render('Student/Dashboard', [
+            'statuses' => $statuses,
+            'first_check' => $first_check,
+            'department' => $department,
+            'ready' => $ready,
+            'revision' => $revision,
+            'reject' => $reject,  
+        ]);
     }
 
     function show()
@@ -39,10 +58,32 @@ class StudentController extends Controller
 
         $filename = DocumentTemplate::find($petition_id);
 
-        $this->replaceAndSaveDocument($filename->path, $requiredData);
+        $res = $this->replaceAndSaveDocument($filename->path, $requiredData, $filename->id);
+
+
+        if ($res->getStatusCode() == 500) {
+            return 'error';
+        } elseif ($res->getStatusCode() == 200) {
+
+            $sender = auth()->id();
+            $receiver = $meth;
+            $template_id = $filename->id;
+            $document_id = $res->getData(true)['document_id'];
+            $status = 1;
+
+            $new_petition = Petition::create([
+                'sender' => $sender,
+                'receiver' => $receiver,
+                'template_id' => $template_id,
+                'document_id' => $document_id,
+                'status' => $status,
+            ]);
+
+            return 'success';
+        }
     }
 
-    public function replaceAndSaveDocument($filename, array $replacements)
+    public function replaceAndSaveDocument($filename, array $replacements, $template_id)
     {
         try {
             $filePath = storage_path('app/public/' . $filename);
@@ -66,19 +107,21 @@ class StudentController extends Controller
             $phpword->setValues($replacements);
 
 
-            
+
             $outputDir = storage_path('app/public/documents/');
             if (!file_exists($outputDir)) {
                 mkdir($outputDir, 0755, true);
             }
-            
+
             // Проверяем права доступа
             if (!is_writable($outputDir)) {
                 throw new \Exception("Директория {$outputDir} недоступна для записи");
             }
-            
-            $outputPath = $outputDir . '/document_' . time() . '.docx';
-            
+
+            $new_file_name = 'document_' . time() . '.docx';
+
+            $outputPath = $outputDir . '/' . $new_file_name;
+
             try {
                 $writer = IOFactory::createWriter($document, 'Word2007');
                 $writer->save($outputPath);
@@ -90,10 +133,18 @@ class StudentController extends Controller
                 ]);
                 throw $e;
             }
-            
+
             $phpword->saveAs($outputPath);
-            
-            return response()->download($outputPath, 'replaced_document.docx');
+
+            $new_document = Document::create([
+                'template_id' => $template_id,
+                'name' => $new_file_name,
+                'path' => 'documents/' . $new_file_name,
+            ]);
+
+            $path = 'documents/' . $new_file_name;
+
+            return response()->json(['document_id' => $new_document->id]);
         } catch (\Exception $e) {
             \Log::error("Ошибка при загрузке или обработке документа: " . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
@@ -101,5 +152,27 @@ class StudentController extends Controller
             ]);
             return response()->json(['error' => 'Не удалось загрузить или обработать документ'], 500);
         }
+    }
+
+    protected function getPetitions($user, $status) {
+        $petitions = DB::table('petitions AS p')
+            ->join('document_templates AS dt', 'dt.id', '=', 'p.template_id')
+            ->join('users AS u', 'u.id', '=', 'p.receiver')
+            ->join('documents AS d', 'd.id', '=', 'p.document_id')
+            ->join('statuses as s', 's.id', '=', 'p.status')
+            ->select([
+                DB::raw('p.id as p_id'),
+                DB::raw('u.name as m_name'),
+                DB::raw('p.created_at as publish_date'),
+                DB::raw('dt.origin_name as origin_name'),
+                DB::raw('dt.path as t_path'),
+                DB::raw('d.path as d_path'),
+                DB::raw('s.id as status')
+            ])
+            ->where('p.sender', '=', $user)
+            ->where('p.status', '=', $status)
+            ->get();
+
+        return $petitions;
     }
 }
