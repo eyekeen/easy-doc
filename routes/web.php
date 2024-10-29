@@ -15,7 +15,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home');
 
 Route::get('/stundet/dashboard', [StudentController::class, 'index'])
         ->middleware(['auth'])->name('student.dashboard');
