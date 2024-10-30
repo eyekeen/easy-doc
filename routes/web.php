@@ -17,14 +17,15 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/stundet/dashboard', [StudentController::class, 'index'])
+Route::get('/student/dashboard', [StudentController::class, 'index'])
         ->middleware(['auth'])->name('student.dashboard');
 
-Route::get('/stundet/send', [StudentController::class, 'show'])->middleware(['auth'])->name('student.send');
-Route::post('/stundet/send', [StudentController::class, 'store'])->middleware(['auth'])->name('student.store');
+Route::get('/student/send', [StudentController::class, 'show'])->middleware(['auth'])->name('student.send');
+Route::post('/student/send', [StudentController::class, 'store'])->middleware(['auth'])->name('student.store');
 
 
 Route::get('/methodologist/dashboard', [MethodologistController::class, 'index'])->middleware(['auth'])->name('methodologist.dashboard');
+Route::put('/methodologist/{pid}', [MethodologistController::class, 'update'])->middleware(['auth'])->name('methodologist.update');
 
 
 Route::get('/department/dashboard', function () {

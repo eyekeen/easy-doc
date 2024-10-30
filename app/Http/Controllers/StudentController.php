@@ -45,7 +45,7 @@ class StudentController extends Controller
     {
         $templates = DocumentTemplate::all();
         $method = User::where('role', 2)->get();
-        $required = DocumentRequired::all();
+        $required = DocumentRequired::where('data_for', 1)->get();
 
         return Inertia::render('Student/Send', ['templates' => $templates, 'method' => $method, 'required' => $required]);
     }

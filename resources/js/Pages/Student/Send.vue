@@ -31,7 +31,7 @@ watch(meth, () => {
 
 const sendPetition = async function () {
   try {
-    const response = await axios.post('/stundet/send', {
+    const response = await axios.post('/student/send', {
       petition_id: petition.value,
       meth: meth.value,
       requiredData: formData.value

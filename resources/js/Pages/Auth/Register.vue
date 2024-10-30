@@ -9,6 +9,8 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 const form = useForm({
     name: '',
     email: '',
+    faculty: '',
+    course: '',
     password: '',
     password_confirmation: '',
 });
@@ -26,7 +28,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="ФИО" />
 
                 <TextInput
                     id="name"
@@ -56,8 +58,40 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
+            <div>
+                <InputLabel for="faculty" value="Факультет" />
+
+                <TextInput
+                    id="faculty"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.faculty"
+                    required
+                    autofocus
+                    autocomplete="faculty"
+                />
+
+                <InputError class="mt-2" :message="form.errors.faculty" />
+            </div>
+
+            <div>
+                <InputLabel for="course" value="Курс" />
+
+                <TextInput
+                    id="course"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.course"
+                    required
+                    autofocus
+                    autocomplete="course"
+                />
+
+                <InputError class="mt-2" :message="form.errors.course" />
+            </div>
+
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Пароль" />
 
                 <TextInput
                     id="password"
@@ -74,7 +108,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Повторите пароль"
                 />
 
                 <TextInput
@@ -97,7 +131,7 @@ const submit = () => {
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Already registered?
+                    Есть аккаунт?
                 </Link>
 
                 <PrimaryButton
@@ -105,7 +139,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Register
+                    Зарегистрироватся
                 </PrimaryButton>
             </div>
         </form>
