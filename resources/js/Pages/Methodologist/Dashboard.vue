@@ -4,14 +4,11 @@ import { onMounted, ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import { DataTable } from "simple-datatables"
 
-const selectedStatus = ref('')
 
-const changeStatus = async ($event) => {
-    const petition_id = $event.target.attributes.pid.value;
-
+const updateStatus = async (pid) => {
     try {
-        const response = await axios.put(`/methodologist/${petition_id}`, {
-            new_status: selectedStatus
+        const response = await axios.put(`/methodologist/${pid}`, {
+            new_status: 2,
         })
 
         console.log(response.data)
@@ -35,29 +32,7 @@ onMounted(() => {
     }
 })
 
-const selectedPetitionId = ref(null);
-const selectedAction = ref('');
 
-const openModal = (id) => {
-    selectedPetitionId.value = id;
-    document.getElementById('action-modal').classList.remove('hidden');
-};
-
-const closeModal = () => {
-    document.getElementById('action-modal').classList.add('hidden');
-    selectedPetitionId.value = null;
-    selectedAction.value = '';
-};
-
-const handleActionSubmit = async () => {
-    try {
-        await axios.post(`/methodologist/${selectedPetitionId.value}/action`, { action: selectedAction.value });
-        closeModal();
-        // Здесь можно добавить обновление таблицы или другие действия после успешного отправки
-    } catch (error) {
-        console.error(error.response ? error.response.data : error.message);
-    }
-};
 
 </script>
 
@@ -154,60 +129,25 @@ const handleActionSubmit = async () => {
                                         {{ petition.status }}
                                     </td>
                                     <td>
-                                        <button @click="openModal(petition.p_id)"
-                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                            Действия
-                                        </button>
+                                        <div v-if="petition.status_code == 1" class="inline-flex rounded-md shadow-sm" role="group">
+                                            <span>
+                                                <form @submit.prevent="updateStatus(petition.p_id)">
+                                                    <input type="hidden" name="new_status" value="2">
+                                                    <button type="submit"
+                                                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                        Отправить в отдел
+                                                    </button>
+                                                </form>
+                                            </span>
+                                            <button type="button"
+                                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                                                Отказ
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
-                            <!-- Модальное окно -->
-                            <div id="action-modal"
-                                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                                <div class="bg-white p-8 border rounded-lg shadow-md max-w-sm w-full">
-                                    <h2 class="text-xl font-semibold mb-4">Выберите действие</h2>
 
-                                    <form @submit.prevent="handleActionSubmit">
-                                        <input type="hidden" name="petition_id" :value="selectedPetitionId">
-
-                                        <select v-model="selectedAction" required>
-                                            <option value="">Выберите действие</option>
-                                            <option value="approve">Одобрить</option>
-                                            <option value="reject">Отклонить</option>
-                                            <option value="hold">Приостановить</option>
-                                            <!-- Добавьте другие варианты действий по необходимости -->
-                                        </select>
-
-                                        <button type="submit"
-                                            class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                                            Применить
-                                        </button>
-                                    </form>
-                                </div>
-                            </div><!-- Модальное окно -->
-                            <div id="action-modal"
-                                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                                <div class="bg-white p-8 border rounded-lg shadow-md max-w-sm w-full">
-                                    <h2 class="text-xl font-semibold mb-4">Выберите действие</h2>
-
-                                    <form @submit.prevent="handleActionSubmit">
-                                        <input type="hidden" name="petition_id" :value="selectedPetitionId">
-
-                                        <select v-model="selectedAction" required>
-                                            <option value="">Выберите действие</option>
-                                            <option value="approve">Одобрить</option>
-                                            <option value="reject">Отклонить</option>
-                                            <option value="hold">Приостановить</option>
-                                            <!-- Добавьте другие варианты действий по необходимости -->
-                                        </select>
-
-                                        <button type="submit"
-                                            class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                                            Применить
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
                         </table>
                     </div>
                 </div>

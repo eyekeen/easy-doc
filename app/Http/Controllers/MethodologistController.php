@@ -25,6 +25,7 @@ class MethodologistController extends Controller
                 DB::raw('p.created_at as publish_date'),
                 DB::raw('dt.origin_name as origin_name'),
                 DB::raw('s.status as status'),
+                DB::raw('p.status as status_code'),
                 DB::raw('d.path as d_path'),
             ])
             ->where('p.receiver', '=', $user)
