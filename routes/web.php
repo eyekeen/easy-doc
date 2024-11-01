@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\MethodologistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -18,7 +19,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/student/dashboard', [StudentController::class, 'index'])
-        ->middleware(['auth'])->name('student.dashboard');
+    ->middleware(['auth'])->name('student.dashboard');
 
 Route::get('/student/send', [StudentController::class, 'show'])->middleware(['auth'])->name('student.send');
 Route::post('/student/send', [StudentController::class, 'store'])->middleware(['auth'])->name('student.store');
@@ -26,11 +27,13 @@ Route::post('/student/send', [StudentController::class, 'store'])->middleware(['
 
 Route::get('/methodologist/dashboard', [MethodologistController::class, 'index'])->middleware(['auth'])->name('methodologist.dashboard');
 Route::put('/methodologist/{pid}', [MethodologistController::class, 'update'])->middleware(['auth'])->name('methodologist.update');
+Route::put('/methodologist/reject/{pid}', [MethodologistController::class, 'reject'])->middleware(['auth'])->name('methodologist.reject');
 
 
-Route::get('/department/dashboard', function () {
-    return Inertia::render('Department/Dashboard');
-})->middleware(['auth'])->name('department.dashboard');
+Route::get('/department/dashboard', [DepartmentController::class, 'index'])->middleware(['auth'])->name('department.dashboard');
+
+Route::put('/department/{pid}', [DepartmentController::class, 'update'])->middleware(['auth'])->name('department.update');
+Route::put('/department/reject/{pid}', [DepartmentController::class, 'reject'])->middleware(['auth'])->name('department.reject');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Petition;
-use App\Models\RejectPetition;
-use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Status;
+use App\Models\RejectPetition;
 use Inertia\Inertia;
+use App\Models\Petition;
 
-class MethodologistController extends Controller
+class DepartmentController extends Controller
 {
     public function index(Request $request)
     {
@@ -29,12 +29,12 @@ class MethodologistController extends Controller
                 DB::raw('p.status as status_code'),
                 DB::raw('d.path as d_path'),
             ])
-            ->where('p.receiver', '=', $user)
+            ->where('p.status', '=', 2)
             ->get();
 
         $statuses = Status::where('id', '!=', 1)->get();
 
-        return Inertia::render('Methodologist/Dashboard', [
+        return Inertia::render('Department/Dashboard', [
            'petitions' => $petitions, 
            'statuses' => $statuses
         ]);

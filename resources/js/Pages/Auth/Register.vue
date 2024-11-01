@@ -66,7 +66,6 @@ const submit = () => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.faculty"
-                    required
                     autofocus
                     autocomplete="faculty"
                 />
@@ -82,7 +81,6 @@ const submit = () => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.course"
-                    required
                     autofocus
                     autocomplete="course"
                 />

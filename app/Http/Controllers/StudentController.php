@@ -21,12 +21,11 @@ class StudentController extends Controller
     {
         $user = $request->user()->id;
 
-        $statuses = Status::all(['id', 'status']);
+        $statuses = Status::where('id', '!=', 4)->get();
 
         $first_check = $this->getPetitions($user, 1);
         $department = $this->getPetitions($user, 2);
         $ready = $this->getPetitions($user, 3);
-        $revision = $this->getPetitions($user, 4);
         $reject = $this->getPetitions($user, 5);
 
         
@@ -36,7 +35,6 @@ class StudentController extends Controller
             'first_check' => $first_check,
             'department' => $department,
             'ready' => $ready,
-            'revision' => $revision,
             'reject' => $reject,  
         ]);
     }
@@ -160,6 +158,7 @@ class StudentController extends Controller
             ->join('users AS u', 'u.id', '=', 'p.receiver')
             ->join('documents AS d', 'd.id', '=', 'p.document_id')
             ->join('statuses as s', 's.id', '=', 'p.status')
+            ->leftJoin('reject_petitions as rp', 'rp.petition_id', '=', 'p.id')
             ->select([
                 DB::raw('p.id as p_id'),
                 DB::raw('u.name as m_name'),
@@ -167,7 +166,9 @@ class StudentController extends Controller
                 DB::raw('dt.origin_name as origin_name'),
                 DB::raw('dt.path as t_path'),
                 DB::raw('d.path as d_path'),
-                DB::raw('s.id as status')
+                DB::raw('s.id as status'),
+                DB::raw('rp.reason as reason'),
+                DB::raw('rp.created_at as reject_date'),
             ])
             ->where('p.sender', '=', $user)
             ->where('p.status', '=', $status)
