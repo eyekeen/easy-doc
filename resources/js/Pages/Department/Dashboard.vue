@@ -6,24 +6,79 @@ import { DataTable } from "simple-datatables"
 import Modal from '@/Components/Modal.vue';
 
 
-const rejectId = ref();
+const rejectId = ref(null);
 const reason = ref('');
+var selectedFile = ref(null);
 
-const modalVisible = ref(false)
 
-const showModal = (pid) => {
+const readyId = ref(null);
+const note = ref('');
+
+const rejectModalVisible = ref(false)
+const readyModalVisible = ref(false)
+
+const showRejectModal = (pid) => {
     rejectId.value = pid
-    modalVisible.value = true
+    rejectModalVisible.value = true
 }
 
-const handleClose = () => {
-    modalVisible.value = false
+const handleRejectClose = () => {
+    rejectModalVisible.value = false
 }
 
-const updateStatus = async (pid) => {
+const showReadyModal = (pid) => {
+    readyId.value = pid
+    readyModalVisible.value = true
+}
+
+const handleReadyClose = () => {
+    readyModalVisible.value = false
+}
+
+const handleFileUpload = (event) => {
+    // Store the selected file in data
+    selectedFile = event.target.files[0];
+
+    console.log(selectedFile);
+
+}
+
+const makeReady = async () => {
+
+    if (!selectedFile) {
+        alert("Выберите файл");
+        return;
+    }
+
+    // Create FormData instance to prepare file data
+    const formData = new FormData();
+    formData.append("signedDoc", selectedFile);
+    formData.append("new_status", 3);
+    formData.append("note", note.value);
+
     try {
-        const response = await axios.put(`/departmnet/${pid}`, {
-            new_status: 2,
+        const response = await axios.post(`/department/${readyId.value}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        })
+
+        console.log(response.data)
+    } catch (error) {
+        console.error(error.response ? error.response.data : error.message)
+    }
+}
+
+
+const testKey = async (pid) => {
+
+    console.log(123);
+    
+
+    try {
+        const response = await axios.post(`/department/test`, {
+            new_status: 3,
+            pid: pid
         })
 
         console.log(response.data)
@@ -35,7 +90,7 @@ const updateStatus = async (pid) => {
 const rejectStatus = async () => {
 
     try {
-        const response = await axios.put(`/departmnet/reject/${rejectId.value}`, {
+        const response = await axios.put(`/department/reject/${rejectId.value}`, {
             new_status: 5,
             reason: reason.value
         })
@@ -162,21 +217,21 @@ onMounted(() => {
                                             role="group">
                                             <span class="mr-2">
                                                 <form class="mb-1">
-                                                    <input type="hidden" name="new_status" value="2">
-                                                    <button type="submit"
+                                                    <input type="hidden" name="new_status" value="3">
+                                                    <button type="button" @click="testKey(petition.p_id)"
                                                         class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                                                         Подписать(Электронная)
                                                     </button>
                                                 </form>
                                                 <form>
-                                                    <input type="hidden" name="new_status" value="2">
-                                                    <button type="submit"
+                                                    <input type="hidden" name="new_status" value="3">
+                                                    <button type="button" @click="showReadyModal(petition.p_id)"
                                                         class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                                         Подписать(скан)
                                                     </button>
                                                 </form>
                                             </span>
-                                            <button @click="showModal(petition.p_id)"
+                                            <button @click="showRejectModal(petition.p_id)"
                                                 class="block focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                                 type="button">
                                                 Отказ
@@ -191,7 +246,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <Modal v-if="modalVisible" :show="modalVisible" :max-width="'md'" :closeable="true" @close="handleClose">
+        <Modal v-if="rejectModalVisible" :show="rejectModalVisible" :max-width="'md'" :closeable="true"
+            @close="handleRejectClose">
             <div class="relative p-4 w-full max-w-md max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -202,7 +258,7 @@ onMounted(() => {
                         </h3>
                         <button type="button"
                             class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                            @click="handleClose">
+                            @click="handleRejectClose">
                             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 14 14">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -229,6 +285,60 @@ onMounted(() => {
                             <button type="submit"
                                 class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                 Отправить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+        <Modal v-if="readyModalVisible" :show="readyModalVisible" :max-width="'md'" :closeable="true"
+            @close="handleReadyClose">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            Скан
+                        </h3>
+                        <button type="button"
+                            class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            @click="handleReadyClose">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5">
+                        <form class="space-y-4" @submit.prevent="makeReady" enctype="multipart/form-data">
+                            <div>
+                                <input type="hidden" name="rpid" :value="readyId" />
+                                <div class="mb-2">
+
+                                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                        for="signed_doc">Скан подписанного документа</label>
+                                    <input @change="handleFileUpload"
+                                        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                        id="signed_doc" name="signed_doc" required type="file">
+
+                                </div>
+                                <div>
+                                    <label for="note"
+                                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                        Примечание
+                                    </label>
+                                    <input type="text" id="note" v-model="note"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="Если есть..." />
+                                </div>
+                            </div>
+                            <button type="submit"
+                                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                Отправить скан
                             </button>
                         </form>
                     </div>

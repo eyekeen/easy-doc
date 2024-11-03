@@ -28,7 +28,6 @@ class StudentController extends Controller
         $ready = $this->getPetitions($user, 3);
         $reject = $this->getPetitions($user, 5);
 
-        
 
         return Inertia::render('Student/Dashboard', [
             'statuses' => $statuses,
@@ -159,6 +158,7 @@ class StudentController extends Controller
             ->join('documents AS d', 'd.id', '=', 'p.document_id')
             ->join('statuses as s', 's.id', '=', 'p.status')
             ->leftJoin('reject_petitions as rp', 'rp.petition_id', '=', 'p.id')
+            ->leftJoin('ready_documents as rd', 'rd.petition_id', '=', 'p.id')
             ->select([
                 DB::raw('p.id as p_id'),
                 DB::raw('u.name as m_name'),
@@ -169,6 +169,11 @@ class StudentController extends Controller
                 DB::raw('s.id as status'),
                 DB::raw('rp.reason as reason'),
                 DB::raw('rp.created_at as reject_date'),
+                DB::raw('rd.note as note'),
+                DB::raw('rd.created_at as ready_date'),
+                DB::raw('rd.path as rd_path'),
+                DB::raw('rd.name as rd_name'),
+                DB::raw('rd.electronKey as rd_ekey'),
             ])
             ->where('p.sender', '=', $user)
             ->where('p.status', '=', $status)

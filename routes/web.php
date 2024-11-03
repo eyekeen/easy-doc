@@ -32,8 +32,9 @@ Route::put('/methodologist/reject/{pid}', [MethodologistController::class, 'reje
 
 Route::get('/department/dashboard', [DepartmentController::class, 'index'])->middleware(['auth'])->name('department.dashboard');
 
-Route::put('/department/{pid}', [DepartmentController::class, 'update'])->middleware(['auth'])->name('department.update');
+Route::post('/department/test', [DepartmentController::class, 'electronicKey'])->middleware(['auth'])->name('department.electronicKey');
 Route::put('/department/reject/{pid}', [DepartmentController::class, 'reject'])->middleware(['auth'])->name('department.reject');
+Route::post('/department/{pid}', [DepartmentController::class, 'update'])->middleware(['auth'])->name('department.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
