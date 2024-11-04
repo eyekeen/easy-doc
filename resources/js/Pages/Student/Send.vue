@@ -3,37 +3,28 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, watch, defineProps, computed } from 'vue';
 
-const petition = ref();
-const meth = ref();
 
 const props = defineProps({
   required: Array
 })
 
+
+
+const selectedDocument = ref(null)
 const formData = ref({})
 
-var selectedFields = null
 
-watch(petition, () => {
-  console.log(`petition ` + petition.value);
-  selectedFields = computed(() => {
-    return props.required.filter(field => field.template_id == petition.value)
-  })
 
-  console.log(props.required);
-  console.log(selectedFields);
-  
-});
+const submitForm = async () => {
 
-watch(meth, () => {
-  console.log(`meth ` + meth.value);
-})
+  const petition = document.getElementById('petition').value
+  const meth = document.getElementById('meth').value
 
-const sendPetition = async function () {
+
   try {
     const response = await axios.post('/student/send', {
-      petition_id: petition.value,
-      meth: meth.value,
+      petition_id: petition,
+      meth: meth,
       requiredData: formData.value
     });
 
@@ -41,7 +32,17 @@ const sendPetition = async function () {
   } catch (error) {
     console.error('Error:', error.message);
   }
+
+  // Handle form submission
+  console.log('Form submitted:', formData);
+  // Reset form data
+  formData = {};
+  // Optionally close the form or reset selected document
+  selectedDocument = null; // Close form after submission
 }
+
+
+
 
 
 
@@ -59,46 +60,41 @@ const sendPetition = async function () {
       </h2>
     </template>
 
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">
-            Форма отправки заявки или запроса справки
+    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-4">
+      <div class="space-y-6">
+        <div class="container mx-auto p-4">
+          <h1 class="text-2xl font-bold mb-4">Список Документов</h1>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-for="doc in $page.props.templates" :key="doc.id"
+              class="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow"
+              @click="selectedDocument = selectedDocument === doc ? null : doc">
+              <h3 class="font-medium">{{ doc.origin_name }}</h3>
+              <p>Lorem.</p>
+            </div>
+          </div>
+
+          <div v-if="selectedDocument" class="mt-6 bg-gray-50 p-4 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">{{ selectedDocument.origin_name }} - Форма</h2>
+            <form @submit.prevent="submitForm">
+              <input type="hidden" id="meth" name="meth" :value="$page.props.method[0].id">
+              <input type="hidden" id="petition" name="petition_id" :value="selectedDocument.id">
+              <div v-for="field in $page.props.required" :key="field.id" class="mb-4">
+                <span v-if="field.template_id == selectedDocument.id">
+                  <label :for="field.key" class="block text-sm font-medium text-gray-700">{{ field.value }}</label>
+                  <input v-model="formData[field.key]" type="text" :id="field.key"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                    required />
+                </span>
+              </div>
+              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">
+                Отправить
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
-
-
-    <form class="max-w-sm mx-auto" @submit.prevent="sendPetition">
-      <label for="default" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Справка/заявка</label>
-      <select id="default" v-model="petition" required
-        class="bg-gray-50 border border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        <option v-for="template in $page.props.templates" :value="template.id">
-          {{ template.origin_name }}
-        </option>
-      </select>
-
-      <label for="default" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-        Методист
-      </label>
-      <select id="default" v-model="meth"
-        class="bg-gray-50 border border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        <option v-for="meth in $page.props.method" :value="meth.id">
-          {{ meth.name }}
-        </option>
-      </select>
-      <div v-if="selectedFields" v-for="(field, index) in selectedFields" :key="index">
-        <label :for="field.key" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          {{ field.value }}
-        </label>
-        <input type="text" :id="field.key" :name="field.key" v-model="formData[field.key]"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-      </div>
-      <button type="submit"
-        class="text-white mt-2 mb-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Отправить</button>
-    </form>
-
 
   </AuthenticatedLayout>
 </template>

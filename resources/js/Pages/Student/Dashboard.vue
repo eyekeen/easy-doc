@@ -60,7 +60,16 @@ var applications = ref([
         documentLink: 'link_to_document_4'
     },
     {
-        id: 4,
+        id: 5,
+        title: 'Заявка на отказ 1',
+        recipient: 'Ольга Кузнецова',
+        submissionDate: '2024-11-04',
+        department: 'Отдел 4',
+        status: 'Отказ',
+        documentLink: 'link_to_document_4'
+    },
+    {
+        id: 6,
         title: 'Заявка на отказ 1',
         recipient: 'Ольга Кузнецова',
         submissionDate: '2024-11-04',
@@ -89,19 +98,8 @@ const filteredApplications = (status) => {
             </h2>
         </template>
 
-        <div class="py-3">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        Список всех заявок которые вы отправили или на которые получилил ответ
-                    </div>
-                </div>
-            </div>
-        </div>
 
-
-
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-3" v-if="false">
             <div class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white rounded-lg shadow p-6" v-for="status in $page.props.statuses">
@@ -148,24 +146,18 @@ const filteredApplications = (status) => {
             </div>
         </div>
 
-        <div class="py-3">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <hr class="h-px my-4 bg-gray-200 border-3 dark:bg-gray-700">
-            </div>
-        </div>
 
-
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-4">
             <div class="space-y-6">
                 <h1 class="text-2xl font-bold mb-4">Список Заявок</h1>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="application-category">
                         <h2 class="text-xl font-semibold mb-2">На проверке у методиста</h2>
-                        <div v-for="app in filteredApplications('На проверке')" :key="app.id"
-                            class="bg-white p-4 rounded-lg shadow-md mb-4">
+                        <div v-if="$page.props.first_check.length > 0" v-for="app in $page.props.first_check"
+                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4">
                             <div class="flex items-center">
-                                <h3 class="font-medium flex-1">{{ app.title }}</h3>
+                                <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" class="lucide lucide-clock h-6 w-6 text-yellow-500">
@@ -173,74 +165,95 @@ const filteredApplications = (status) => {
                                     <polyline points="12 6 12 12 16 14"></polyline>
                                 </svg>
                             </div>
-                            <p>Получатель: {{ app.recipient }}</p>
-                            <p>Дата отправки: {{ app.submissionDate }}</p>
-                            <p>Отдел: {{ app.department }}</p>
-                            <p>Статус: {{ app.status }}</p>
-                            <a :href="app.documentLink" class="text-blue-500 hover:underline">Документ</a>
+                            <p>Методист: {{ app.m_name }}</p>
+                            <p>Дата отправки: {{ app.publish_date }}</p>
+                            <p>Отдел: образования</p>
+                            <a :href="`/storage/${app.t_path}`" class="text-blue-500 hover:underline">Чистый
+                                документ</a><br>
+                            <a :href="`/storage/${app.d_path}`" class="text-blue-500 hover:underline">Отправленный
+                                документ</a>
                         </div>
+                        <div v-else class="text-gray-500">Нет заявок на проверке.</div>
                     </div>
 
                     <div class="application-category">
-                        <h2 class="text-xl font-semibold mb-2">Передан в отдел</h2>
-                        <div v-for="app in filteredApplications('Передан в отдел')" :key="app.id"
-                            class="bg-white p-4 rounded-lg shadow-md mb-4">
+                        <h2 class="text-xl font-semibold mb-2">Отправлен в отдел</h2>
+                        <div v-if="$page.props.department.length > 0" v-for="app in $page.props.department"
+                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4">
                             <div class="flex items-center">
-                                <h3 class="font-medium flex-1">{{ app.title }}</h3>
+                                <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-clock h-6 w-6 text-yellow-500">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                    stroke-linejoin="round" class="lucide lucide-file-text h-8 w-8 text-blue-500">
+                                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                                    <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                                    <path d="M10 9H8"></path>
+                                    <path d="M16 13H8"></path>
+                                    <path d="M16 17H8"></path>
                                 </svg>
                             </div>
-                            <p>Получатель: {{ app.recipient }}</p>
-                            <p>Дата отправки: {{ app.submissionDate }}</p>
-                            <p>Отдел: {{ app.department }}</p>
-                            <p>Статус: {{ app.status }}</p>
-                            <a :href="app.documentLink" class="text-blue-500 hover:underline">Документ</a>
+                            <p>Методист: {{ app.m_name }}</p>
+                            <p>Дата отправки: {{ app.publish_date }}</p>
+                            <p>Отдел: образования</p>
+                            <a :href="`/storage/${app.t_path}`" class="text-blue-500 hover:underline">Чистый
+                                документ</a><br>
+                            <a :href="`/storage/${app.d_path}`" class="text-blue-500 hover:underline">Отправленный
+                                документ</a>
                         </div>
+                        <div v-else class="text-gray-500">Нет заявок, переданных в отдел.</div>
                     </div>
 
                     <div class="application-category">
                         <h2 class="text-xl font-semibold mb-2">Готов к выдаче</h2>
-                        <div v-for="app in filteredApplications('Готов к выдаче')" :key="app.id"
+                        <div v-if="$page.props.ready.length > 0" v-for="app in $page.props.ready" :key="app.p_id"
                             class="bg-white p-4 rounded-lg shadow-md mb-4">
                             <div class="flex items-center">
-                                <h3 class="font-medium flex-1">{{ app.title }}</h3>
+                                <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-clock h-6 w-6 text-yellow-500">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                    stroke-linejoin="round" class="lucide lucide-check-circle h-8 w-8 text-green-500">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <path d="m9 11 3 3L22 4"></path>
                                 </svg>
                             </div>
-                            <p>Получатель: {{ app.recipient }}</p>
-                            <p>Дата отправки: {{ app.submissionDate }}</p>
-                            <p>Отдел: {{ app.department }}</p>
-                            <p>Статус: {{ app.status }}</p>
-                            <a :href="app.documentLink" class="text-blue-500 hover:underline">Документ</a>
+                            <p>Методист: {{ app.m_name }}</p>
+                            <p>Дата отправки: {{ app.publish_date }}</p>
+                            <p>Дата ответа: {{ app.ready_date }}</p>
+                            <p>Отдел: образования</p>
+                            <a :href="`/storage/${app.rd_path}`" class="text-blue-500 hover:underline">Отправленный
+                                документ</a>
+                            <p class="text-red-600" v-if="app.rd_ekey == 1">
+                                *Электронная подпись
+                            </p>
+                            <p v-if="app.note">
+                                Примечание: {{ app.note }}
+                            </p>
                         </div>
                     </div>
 
                     <div class="application-category">
                         <h2 class="text-xl font-semibold mb-2">Отказ</h2>
-                        <div v-for="app in filteredApplications('Отказ')" :key="app.id"
+                        <div v-if="$page.props.reject.length > 0" v-for="app in $page.props.reject" :key="app.p_id"
                             class="bg-white p-4 rounded-lg shadow-md mb-4">
                             <div class="flex items-center">
-                                <h3 class="font-medium flex-1">{{ app.title }}</h3>
+                                <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-clock h-6 w-6 text-yellow-500">
+                                    stroke-linejoin="round" class="lucide lucide-xcircle h-8 w-8 text-red-500">
                                     <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                    <path d="m15 9-6 6"></path>
+                                    <path d="m9 9 6 6"></path>
                                 </svg>
                             </div>
-                            <p>Получатель: {{ app.recipient }}</p>
-                            <p>Дата отправки: {{ app.submissionDate }}</p>
-                            <p>Отдел: {{ app.department }}</p>
-                            <p>Статус: {{ app.status }}</p>
-                            <a :href="app.documentLink" class="text-blue-500 hover:underline">Документ</a>
+                            <p>Методист: {{ app.m_name }}</p>
+                            <p>Дата отправки: {{ app.publish_date }}</p>
+                            <p>Дата ответа: {{ app.ready_date }}</p>
+                            <p>Отдел: образования</p>
+                            <a :href="`/storage/${app.d_path}`" class="text-blue-500 hover:underline">Отправленный
+                                документ</a>
+                            <p>
+                                Причина: {{ app.reason }}
+                            </p>
                         </div>
                     </div>
                 </div>

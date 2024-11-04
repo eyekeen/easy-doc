@@ -49,9 +49,9 @@ class StudentController extends Controller
 
     function store(Request $request)
     {
+        $requiredData = $request->get('requiredData');
         $petition_id = $request->get('petition_id');
         $meth = $request->get('meth');
-        $requiredData = $request->get('requiredData');
 
         $filename = DocumentTemplate::find($petition_id);
 
