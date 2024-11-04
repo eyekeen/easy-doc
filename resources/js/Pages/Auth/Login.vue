@@ -38,6 +38,9 @@ const submit = () => {
             {{ status }}
         </div>
 
+
+
+
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <div className="flex justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -54,9 +57,10 @@ const submit = () => {
                 CHESU Doc
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-                
+
             </p>
         </div>
+
 
         <form @submit.prevent="submit">
             <div>
@@ -95,8 +99,8 @@ const submit = () => {
                 Забыл пароль?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                <PrimaryButton class="ms-4 border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Войти
                 </PrimaryButton>
             </div>
         </form>
