@@ -20,6 +20,7 @@ class MethodologistController extends Controller
             ->join('users AS u', 'u.id', '=', 'p.sender')
             ->join('documents AS d', 'd.id', '=', 'p.document_id')
             ->join('statuses as s', 's.id', '=', 'p.status')
+            ->leftJoin('reject_petitions as rp', 'rp.petition_id', '=', 'p.id')
             ->select([
                 DB::raw('p.id as p_id'),
                 DB::raw('u.name as s_name'),
@@ -28,6 +29,8 @@ class MethodologistController extends Controller
                 DB::raw('s.status as status'),
                 DB::raw('p.status as status_code'),
                 DB::raw('d.path as d_path'),
+                DB::raw('rp.petition_id as rpid'),
+                DB::raw('rp.reason as reason'),
             ])
             ->where('p.receiver', '=', $user)
             ->get();
