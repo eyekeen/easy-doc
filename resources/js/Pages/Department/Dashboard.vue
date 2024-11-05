@@ -35,13 +35,6 @@ const handleReadyClose = () => {
     readyModalVisible.value = false
 }
 
-const handleFileUpload = (event) => {
-    // Store the selected file in data
-    selectedFile = event.target.files[0];
-
-    console.log(selectedFile);
-
-}
 
 const makeReady = async () => {
 
@@ -73,7 +66,7 @@ const makeReady = async () => {
 const testKey = async (pid) => {
 
     console.log(123);
-    
+
 
     try {
         const response = await axios.post(`/department/test`, {
@@ -116,7 +109,89 @@ onMounted(() => {
     }
 })
 
+const applications = ref([
+    {
+        id: 1,
+        fullName: 'Иванов Иван Иванович',
+        title: 'Заявка на академический отпуск',
+        documentLink: 'link_to_document_1',
+        submissionDate: '2024-11-01',
+        status: 'На проверке'
+    },
+    {
+        id: 2,
+        fullName: 'Петров Петр Петрович',
+        title: 'Заявка на перевод',
+        documentLink: 'link_to_document_2',
+        submissionDate: '2024-11-02',
+        status: 'На проверке'
+    },
+    // Add more applications as needed
+])
+const isModalOpen = ref(false)
+const refusalReason = ref('')
+const selectedApplicationId = ref(null)
 
+const isUploadModalOpen = ref(false)
+const uploadNotes = ref('')
+const selectedUploadApplicationId = ref(null)
+const uploadedFile = ref(null)
+
+const electronicSignature = (applicationId) => {
+    // Logic to handle electronic signature
+    console.log(`Applying electronic signature for application ${applicationId}...`);
+}
+const uploadScan = (applicationId) => {
+    // Logic to handle scan upload
+    console.log(`Upload scan for application ${applicationId}...`);
+    // You can implement file upload logic here
+}
+const openModal = (applicationId) => {
+    selectedApplicationId.value = applicationId;
+    isModalOpen.value = true;
+}
+const closeModal = () => {
+    isModalOpen.value = false;
+    refusalReason.value = ''; // Clear the reason when closing
+}
+const submitRefusal = () => {
+    if (refusalReason.value.trim() === '') {
+        alert('Причина отказа не может быть пустой!');
+        return;
+    }
+
+    // Implement logic for handling the refusal
+    console.log(`Application ${selectedApplicationId.value} rejected for reason: ${refusalReason.value}`);
+
+    // Close the modal and reset
+    closeModal();
+}
+
+const openUploadModal = (applicationId) => {
+    selectedUploadApplicationId.value = applicationId;
+    isUploadModalOpen.value = true;
+}
+const handleFileUpload = (event) => {
+    uploadedFile.value = event.target.files[0]; // Capture the uploaded file
+}
+const submitUpload = () => {
+    if (!uploadedFile.value) {
+        alert('Пожалуйста, выберите файл для загрузки.');
+        return;
+    }
+
+    // Logic to handle file upload with notes
+    console.log(`Uploading file for application ${selectedUploadApplicationId.value} with notes: ${uploadNotes.value}`);
+    console.log(uploadedFile.value)
+    // Close the upload modal and reset the form
+    closeUploadModal();
+}
+
+const closeUploadModal = () => {
+    isUploadModalOpen.value = false;
+    uploadedFile.value = null; // Clear the uploaded file when closing
+    uploadNotes.value = ''; // Clear notes
+}
 
 </script>
 
@@ -130,6 +205,84 @@ onMounted(() => {
                 Заявки от студентов
             </h2>
         </template>
+
+        <div class="container mx-auto p-4">
+            <h1 class="text-2xl font-bold mb-4">Заявки от студентов</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="application in applications" :key="application.id"
+                    class="bg-white p-4 rounded-lg shadow-md mb-4">
+                    <h3 class="font-medium">Заявка #{{ application.id }}</h3>
+                    <p>ФИО: {{ application.fullName }}</p>
+                    <p>Название заявки: {{ application.title }}</p>
+                    <p>Ссылка на документ: <a :href="application.documentLink"
+                            class="text-blue-500 hover:underline">Документ</a></p>
+                    <p>Дата отправки: {{ application.submissionDate }}</p>
+                    <p>Статус: {{ application.status }}</p>
+
+                    <div class="mt-4">
+                        <button class="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 mr-2"
+                            @click="electronicSignature(application.id)">
+                            Электронная подпись
+                        </button>
+                        <button class="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 mr-2"
+                            @click="openUploadModal(application.id)">
+                            Загрузить скан
+                        </button>
+                        <button class="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                            @click="openModal(application.id)">
+                            Отказ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for rejection reason -->
+            <transition name="modal">
+                <div v-if="isModalOpen"
+                    class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Причина отказа</h2>
+                        <textarea v-model="refusalReason" class="w-full h-24 p-2 border border-gray-300 rounded-md"
+                            placeholder="Введите причину..."></textarea>
+                        <div class="mt-4">
+                            <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                                @click="submitRefusal">
+                                Подтвердить
+                            </button>
+                            <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 ml-2"
+                                @click="closeModal">
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+            <!-- Modal for uploading scan -->
+            <transition name="modal">
+                <div v-if="isUploadModalOpen"
+                    class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 w-1/3">
+                        <h2 class="text-xl font-semibold mb-4">Загрузка скана для Заявки #{{ selectedUploadApplicationId
+                            }}</h2>
+                        <input type="file" @change="handleFileUpload"
+                            class="block w-full mb-4 border border-gray-300 rounded-md" />
+                        <textarea v-model="uploadNotes" class="w-full h-24 p-2 border border-gray-300 rounded-md"
+                            placeholder="Введите примечания..."></textarea>
+                        <div class="mt-4">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                @click="submitUpload">
+                                Отправить
+                            </button>
+                            <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 ml-2"
+                                @click="closeUploadModal">
+                                Отмена
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </div>
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
