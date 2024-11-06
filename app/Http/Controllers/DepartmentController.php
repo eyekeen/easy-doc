@@ -164,7 +164,7 @@ class DepartmentController extends Controller
             $readyDoc->note = $request->input('note') ?? null;
 
             $readyDoc->name = $newFileName;
-            $readyDoc->path = $newFilePath;
+            $readyDoc->path = 'ready/' . $newFileName;
             $readyDoc->electronKey = 1;
 
             if ($readyDoc->save()) {
