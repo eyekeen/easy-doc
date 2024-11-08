@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, watch, defineProps, computed } from 'vue';
+import Toast from '@/Components/Toast.vue';
 
 
 const props = defineProps({
@@ -29,8 +30,21 @@ const submitForm = async () => {
     });
 
     console.log(response.data);
+
+    if (response.status === 200) {
+      toastMessage.value = 'Process completed successfully!';
+      toastType.value = 'success';
+    } else {
+      toastMessage.value = 'Unexpected response from the server.';
+      toastType.value = 'error';
+    }
+
   } catch (error) {
-    console.error('Error:', error.message);
+    toastMessage.value = 'An error occurred during the process.';
+    toastType.value = 'error';
+    console.error(error);
+  } finally {
+    showToast.value = true;
   }
 
   // Handle form submission
@@ -42,9 +56,9 @@ const submitForm = async () => {
 }
 
 
-
-
-
+const showToast = ref(true);
+const toastMsg = ref('');
+const toastType = ref('success');
 
 
 </script>
@@ -59,6 +73,24 @@ const submitForm = async () => {
         Форма отправки заявки или запроса справки
       </h2>
     </template>
+
+    
+
+    <div id="toast-top-right"
+    v-if="showToast"
+      class="fixed justify-betwee flex items-center w-full max-w-xs p-4 space-x-4 text-gray-500 bg-white divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow top-5 right-5 dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800"
+      role="alert">
+      <div class="text-sm font-normal">Top right positioning.</div>
+      <button type="button"
+        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        data-dismiss-target="#toast-top-right" aria-label="Close">
+        <span class="sr-only">Close</span>
+        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+        </svg>
+      </button>
+    </div>
 
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-4">
       <div class="space-y-6">

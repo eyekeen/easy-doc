@@ -2,10 +2,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { onMounted, ref, computed } from 'vue';
-import { DataTable } from "simple-datatables"
-
+import Toast from '@/Components/Toast.vue';
 
 const spath = '/storage/';
+
+const showToast = false
+const toastMessage = ''
+const toastType = 'success' // or 'error'
 
 </script>
 
@@ -20,14 +23,14 @@ const spath = '/storage/';
             </h2>
         </template>
 
+  
 
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-4">
             <div class="space-y-6">
-                <h1 class="text-2xl font-bold mb-4">Список Заявок</h1>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="application-category">
-                        <h2 class="text-xl font-semibold mb-2">На проверке у методиста</h2>
+                        <h2 class="text-xl font-semibold mb-2 text-blue-600">На проверке у методиста</h2>
                         <div v-if="$page.props.first_check.length > 0" v-for="app in $page.props.first_check"
                             :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
                             1`2314`
@@ -52,9 +55,9 @@ const spath = '/storage/';
                     </div>
 
                     <div class="application-category">
-                        <h2 class="text-xl font-semibold mb-2">Отправлен в отдел</h2>
+                        <h2 class="text-xl font-semibold mb-2 text-teal-600">Отправлен в отдел</h2>
                         <div v-if="$page.props.department.length > 0" v-for="app in $page.props.department"
-                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4">
+                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
                             <div class="flex items-center">
                                 <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -79,9 +82,9 @@ const spath = '/storage/';
                     </div>
 
                     <div class="application-category">
-                        <h2 class="text-xl font-semibold mb-2">Готов к выдаче</h2>
+                        <h2 class="text-xl font-semibold mb-2 text-green-500">Готов к выдаче</h2>
                         <div v-if="$page.props.ready.length > 0" v-for="app in $page.props.ready" :key="app.p_id"
-                            class="bg-white p-4 rounded-lg shadow-md mb-4">
+                            class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
                             <div class="flex items-center">
                                 <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -104,12 +107,13 @@ const spath = '/storage/';
                                 Примечание: {{ app.note }}
                             </p>
                         </div>
+                        <div v-else class="text-gray-500">Нет заявок, готовых к выдаче.</div>
                     </div>
 
                     <div class="application-category">
-                        <h2 class="text-xl font-semibold mb-2">Отказ</h2>
+                        <h2 class="text-xl font-semibold mb-2 text-red-600">Отказ</h2>
                         <div v-if="$page.props.reject.length > 0" v-for="app in $page.props.reject" :key="app.p_id"
-                            class="bg-white p-4 rounded-lg shadow-md mb-4">
+                            class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
                             <div class="flex items-center">
                                 <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -130,6 +134,7 @@ const spath = '/storage/';
                                 Причина: {{ app.reason }}
                             </p>
                         </div>
+                        <div v-else class="text-gray-500">Нет заявок с отказом.</div>
                     </div>
                 </div>
             </div>
@@ -146,11 +151,12 @@ const spath = '/storage/';
     color: #fff !important;
 }
 
-.application-category {
+.petition {
     transition: all 0.3s ease;
 }
 
-.application-category:hover {
+.petition:hover {
     transform: scale(1.05);
+    cursor: pointer;
 }
 </style>

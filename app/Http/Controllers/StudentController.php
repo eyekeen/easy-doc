@@ -50,12 +50,13 @@ class StudentController extends Controller
     function store(Request $request)
     {
         $requiredData = $request->get('requiredData');
+
         $petition_id = $request->get('petition_id');
         $meth = $request->get('meth');
 
         $filename = DocumentTemplate::find($petition_id);
 
-        $res = $this->replaceAndSaveDocument($filename->path, $requiredData, $filename->id);
+        $res = $this->replaceAndSaveDocument($request, $filename->path, $requiredData, $filename->id);
 
 
         if ($res->getStatusCode() == 500) {
@@ -80,7 +81,7 @@ class StudentController extends Controller
         }
     }
 
-    public function replaceAndSaveDocument($filename, array $replacements, $template_id)
+    public function replaceAndSaveDocument(Request $request, $filename, array $replacements, $template_id)
     {
         try {
             $filePath = storage_path('app/public/' . $filename);
@@ -100,6 +101,29 @@ class StudentController extends Controller
             $file = $filePath;
 
             $phpword = new TemplateProcessor($file);
+
+            $replacements['sname'] = $request->user()->name;
+
+            if(isset($replacements['ostart'])){
+                $ostart_date = explode('.', $replacements['ostart']);
+
+                $replacements['ostartd'] = $ostart_date[0];
+                $replacements['ostartm'] = $ostart_date[1];
+                $replacements['ostarty'] = $ostart_date[2];
+
+                unset($replacements['ostart']);
+            }
+
+            if(isset($replacements['oend'])){
+                $oend_date = explode('.', $replacements['oend']);
+
+                $replacements['oendd'] = $oend_date[0];
+                $replacements['oendm'] = $oend_date[1];
+                $replacements['oendy'] = $oend_date[2];
+
+                unset($replacements['oend']);
+            }
+
 
             $phpword->setValues($replacements);
 

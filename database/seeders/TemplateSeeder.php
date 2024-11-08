@@ -15,12 +15,12 @@ class TemplateSeeder extends Seeder
     {
         $data = [
             [
-                'origin_name' => 'Cправка о стипендии',
+                'origin_name' => 'Справка для соц. стипендии',
                 'name' => 'iahiucf12iu1fi2.docx',
                 'path' => 'templates/iahiucf12iu1fi2.docx'
             ],
             [
-                'origin_name' => 'Cправка об обучении',
+                'origin_name' => 'Справка для представления по месту требования',
                 'name' => 'dqwd12e1dq12.docx',
                 'path' => 'templates/dqwd12e1dq12.docx'
             ],
