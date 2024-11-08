@@ -14,10 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = new RoleSeeder();
-        $statuses = new StatusSeeder();
-        
-        $roles->run();
-        $statuses->run();
+
+        $this->call([
+            RoleSeeder::class,
+            StatusSeeder::class,
+            UserSeeder::class,
+            TemplateSeeder::class,
+        ]);
     }
 }

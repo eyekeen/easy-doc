@@ -6,48 +6,6 @@ import { DataTable } from "simple-datatables"
 
 
 const spath = '/storage/';
-var dataTable = null;
-
-
-const searchQuery = ref('')
-const currentPage = ref(1) // Single current page for all applications
-const itemsPerPage = ref(2) // Number of items per page
-const applications = ref([
-    // Sample data structure for applications
-    { id: 1, title: 'Заявка 1', methodist: 'Иванов', submissionDate: '2024-11-01', department: 'Отдел 1', documentLink: '#', status: 'На проверке у методиста' },
-    { id: 2, title: 'Заявка 2', methodist: 'Петров', submissionDate: '2024-11-02', department: 'Отдел 2', documentLink: '#', status: 'Отправлен в отдел' },
-    { id: 3, title: 'Заявка 3', methodist: 'Сидоров', submissionDate: '2024-11-03', department: 'Отдел 3', documentLink: '#', status: 'Готов к выдаче' },
-    { id: 4, title: 'Заявка 4', methodist: 'Александров', submissionDate: '2024-11-04', department: 'Отдел 4', documentLink: '#', status: 'Отказ' },
-])
-
-
-
-const filteredApplications = computed(() => {
-    // Filter applications based on search query
-    return applications.value.filter(app =>
-        app.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-})
-const paginatedApplications = computed(() => {
-    // Calculate the start and end index for pagination
-    const start = (currentPage.value - 1) * itemsPerPage.value;
-    return filteredApplications.value.slice(start, start + itemsPerPage.value);
-})
-const totalPages = computed(() => {
-    // Calculate total pages based on filtered applications
-    return Math.ceil(filteredApplications.value.length / itemsPerPage.value);
-})
-
-const nextPage = () => {
-    if (currentPage.value < totalPages.value) {
-        currentPage.value++;
-    }
-}
-const previousPage = () => {
-    if (currentPage.value > 1) {
-        currentPage.value--;
-    }
-}
 
 </script>
 
@@ -61,56 +19,7 @@ const previousPage = () => {
                 Мои заявки
             </h2>
         </template>
-        <div class="container mx-auto p-4">
-            <h1 class="text-2xl font-bold mb-4">Список Заявок</h1>
 
-            <input type="text" v-model="searchQuery" placeholder="Поиск..."
-                class="mb-4 p-2 border border-gray-300 rounded" />
-
-            <div class="bg-white rounded-lg shadow-md">
-                <table class="min-w-full border-collapse border border-gray-300">
-                    <thead>
-                        <tr>
-                            <th class="border border-gray-300 p-2">Номер</th>
-                            <th class="border border-gray-300 p-2">Название</th>
-                            <th class="border border-gray-300 p-2">Методист</th>
-                            <th class="border border-gray-300 p-2">Дата отправки</th>
-                            <th class="border border-gray-300 p-2">Отдел</th>
-                            <th class="border border-gray-300 p-2">Документ</th>
-                            <th class="border border-gray-300 p-2">Статус</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="application in paginatedApplications" :key="application.id">
-                            <td class="border border-gray-300 p-2">{{ application.id }}</td>
-                            <td class="border border-gray-300 p-2">{{ application.title }}</td>
-                            <td class="border border-gray-300 p-2">{{ application.methodist }}</td>
-                            <td class="border border-gray-300 p-2">{{ application.submissionDate }}</td>
-                            <td class="border border-gray-300 p-2">{{ application.department }}</td>
-                            <td class="border border-gray-300 p-2">
-                                <a :href="application.documentLink" class="text-blue-500 hover:underline">Ссылка</a>
-                            </td>
-                            <td class="border border-gray-300 p-2">{{ application.status }}</td>
-                        </tr>
-                        <tr v-if="!paginatedApplications.length">
-                            <td colspan="7" class="border border-gray-300 p-2 text-center">Нет заявок</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination Controls -->
-            <div class="mt-4 flex justify-between">
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" @click="previousPage"
-                    :disabled="currentPage <= 1">
-                    Назад
-                </button>
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" @click="nextPage"
-                    :disabled="currentPage >= totalPages">
-                    Вперед
-                </button>
-            </div>
-        </div>
 
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 mt-4">
             <div class="space-y-6">
@@ -120,7 +29,8 @@ const previousPage = () => {
                     <div class="application-category">
                         <h2 class="text-xl font-semibold mb-2">На проверке у методиста</h2>
                         <div v-if="$page.props.first_check.length > 0" v-for="app in $page.props.first_check"
-                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4">
+                            :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
+                            1`2314`
                             <div class="flex items-center">
                                 <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
