@@ -33,7 +33,6 @@ const toastType = 'success' // or 'error'
                         <h2 class="text-xl font-semibold mb-2 text-blue-600">На проверке у методиста</h2>
                         <div v-if="$page.props.first_check.length > 0" v-for="app in $page.props.first_check"
                             :key="app.p_id" class="bg-white p-4 rounded-lg shadow-md mb-4 petition">
-                            1`2314`
                             <div class="flex items-center">
                                 <h3 class="font-medium flex-1">#{{ app.p_id }} {{ app.origin_name }}</h3>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
