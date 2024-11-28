@@ -23,8 +23,8 @@
 
 1. Склонируйте репозиторий:
    ```bash
-   git clone <url вашего репозитория>
-   cd <папка проекта>
+   git clone https://github.com/eyekeen/easy-doc.git
+   cd easy-doc
    ```
 
 2. Установите зависимости PHP:
