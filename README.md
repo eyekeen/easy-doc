@@ -21,8 +21,8 @@ Ensure you have the following installed on your system:
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository_url>
-cd <repository_name>
+git clone https://github.com/eyekeen/easy-doc.git
+cd easy-doc
 ```
 
 ### 2. Install Dependencies
