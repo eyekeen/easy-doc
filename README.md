@@ -43,18 +43,8 @@ npm install
    ```
 
 2. Update the `.env` file with necessary configurations:
-   - Set the `APP_KEY`:
      ```bash
      php artisan key:generate
-     ```
-   - Configure the database to use SQLite:
-     ```env
-     DB_CONNECTION=sqlite
-     DB_DATABASE=/absolute/path/to/database.sqlite
-     ```
-   - Create an SQLite database file:
-     ```bash
-     touch database/database.sqlite
      ```
 
 ### 4. Generate OpenSSL Keys
