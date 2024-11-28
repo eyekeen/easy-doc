@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             UserSeeder::class,
             TemplateSeeder::class,
+            RequireSeeder::class,
         ]);
     }
 }

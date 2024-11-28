@@ -31,7 +31,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Отдел образования',
-                'email' => 'test2@mail.ru',
+                'email' => 'test3@mail.ru',
                 'role' => 3,
                 'password' => Hash::make('12345678'),
             ],
