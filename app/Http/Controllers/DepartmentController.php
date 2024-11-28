@@ -106,6 +106,7 @@ class DepartmentController extends Controller
         // Загружаем существующий документ
         $phpWord = IOFactory::load($filePath, 'Word2007');
 
+
         // Получаем последний раздел документа
         $sections = $phpWord->getSections();
         $lastSection = end($sections); // Последний раздел
@@ -124,6 +125,11 @@ class DepartmentController extends Controller
         );
 
         // Сохраняем обновленный документ с новым именем
+
+        if (!is_dir(storage_path('app/public/ready'))) {
+            mkdir(storage_path('app/public/ready'));
+        }
+
         $newFileName = Str::uuid() . '.docx';
         $newFilePath = storage_path('app/public/ready/' . $newFileName);
         $phpWord->save($newFilePath, 'Word2007');

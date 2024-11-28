@@ -88,7 +88,6 @@ class StudentController extends Controller
             $filePath = storage_path('app/public/' . $filename);
 
 
-
             if (!file_exists($filePath)) {
                 throw new \Exception("Файл не найден: {$filePath}");
             }

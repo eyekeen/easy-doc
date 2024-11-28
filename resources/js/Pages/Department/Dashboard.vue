@@ -27,7 +27,7 @@ const electronicSignature = async (applicationId) => {
     }
 
     // Implement logic for handling the refusal
-    location.reload();
+    // location.reload();
     // Logic to handle electronic signature
     console.log(`Applying electronic signature for application ${applicationId}...`);
 }
