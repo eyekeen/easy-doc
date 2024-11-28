@@ -1,113 +1,142 @@
-# Проект на Laravel + Vue + Inertia
 
-## Описание проекта
+# Laravel + Vue 3 + Inertia + SQLite Project
 
-Этот проект разработан с использованием Laravel в качестве бэкенда, Vue.js в качестве фронтенда и Inertia.js для интеграции между ними.  
-Проект включает:
-- Сидеры для заполнения базы данных данными.
-- Использование локальной файловой системы для хранения файлов через `Storage`.
+This project is a Laravel application integrated with Vue 3, Inertia.js, and SQLite. It includes functionality for generating OpenSSL keys and linking storage. Follow the steps below to set up and run the project locally.
 
 ---
 
-## Установка
+## Prerequisites
 
-### Требования
+Ensure you have the following installed on your system:
 - PHP >= 8.1
 - Composer
-- Node.js >= 16.0
-- npm или Yarn
-- MySQL или другая поддерживаемая база данных
-- Laravel >= 10
+- Node.js >= 16.x
+- npm or Yarn
+- SQLite
+- OpenSSL (for key generation)
 
-### Шаги установки
+---
 
-1. Склонируйте репозиторий:
-   ```bash
-   git clone https://github.com/eyekeen/easy-doc.git
-   cd easy-doc
-   ```
+## Setup Instructions
 
-2. Установите зависимости PHP:
-   ```bash
-   composer install
-   ```
+### 1. Clone the Repository
+```bash
+git clone <repository_url>
+cd <repository_name>
+```
 
-3. Установите зависимости JavaScript:
-   ```bash
-   npm install
-   # или
-   yarn install
-   ```
+### 2. Install Dependencies
+#### Backend (Laravel)
+```bash
+composer install
+```
 
-4. Создайте файл `.env` и настройте параметры подключения к базе данных:
+#### Frontend (Vue)
+```bash
+npm install
+```
+
+### 3. Environment Configuration
+1. Copy the `.env.example` file to `.env`:
    ```bash
    cp .env.example .env
    ```
 
-5. Сгенерируйте ключ приложения:
-   ```bash
-   php artisan key:generate
-   ```
+2. Update the `.env` file with necessary configurations:
+   - Set the `APP_KEY`:
+     ```bash
+     php artisan key:generate
+     ```
+   - Configure the database to use SQLite:
+     ```env
+     DB_CONNECTION=sqlite
+     DB_DATABASE=/absolute/path/to/database.sqlite
+     ```
+   - Create an SQLite database file:
+     ```bash
+     touch database/database.sqlite
+     ```
 
-6. Настройте параметры файловой системы:
-   В файле `.env` установите:
-   ```env
-   FILESYSTEM_DRIVER=local
-   ```
-
-7. Запустите миграции и сидеры:
-   ```bash
-   php artisan migrate --seed
-   ```
-
----
-
-## Сидеры
-
-Сидеры подключены через `DatabaseSeeder`. Они автоматически заполняют базу данных тестовыми данными.  
-Если вы хотите повторно запустить сидеры, выполните команду:
+### 4. Generate OpenSSL Keys
+Run the following command to generate OpenSSL keys in the `storage/app/private` directory:
 ```bash
-php artisan db:seed
+openssl genpkey -algorithm RSA -out storage/app/private/private.key
+openssl rsa -in storage/app/private/private.key -pubout -out storage/app/private/public.key
 ```
 
----
-
-## Хранение файлов
-
-Для хранения файлов используется локальная файловая система. Файлы сохраняются в папке `storage/app`.
-
-Чтобы опубликовать публичные ссылки для файлов, выполните:
+### 5. Link Storage
+Create a symbolic link to the storage directory:
 ```bash
 php artisan storage:link
 ```
 
-Теперь файлы, сохраненные в `Storage`, будут доступны через URL `/storage`.
+### 6. Run Migrations and Seeders
+Run the migrations to set up the database schema and seed initial data:
+```bash
+php artisan migrate --seed
+```
 
----
+### 7. Build Frontend Assets
+Compile the frontend assets using Vite:
+```bash
+npm run build
+```
+For development, you can use:
+```bash
+npm run dev
+```
 
-## Команды разработки
-
-### Запуск локального сервера
+### 8. Start the Development Server
+Run the Laravel development server:
 ```bash
 php artisan serve
 ```
 
-### Сборка ассетов
-Для разработки:
-```bash
-npm run dev
+---
+
+## Accessing the Application
+
+After starting the server, you can access the application at:
 ```
-Для продакшена:
-```bash
-npm run build
+http://localhost:8000
 ```
 
 ---
 
-## Полезные ссылки
+## Notes
 
-- [Laravel Documentation](https://laravel.com/docs)
-- [Vue.js Documentation](https://vuejs.org/guide/introduction.html)
-- [Inertia.js Documentation](https://inertiajs.com/)
+- **Storage:** Ensure the `storage/` directory and its subdirectories are writable.
+- **Keys:** Keep the private key (`private.key`) secure and do not share it.
+- **Database:** If you want to reset the database, you can clear and re-seed it:
+  ```bash
+  php artisan migrate:fresh --seed
+  ```
 
 ---
+
+## Additional Commands
+
+### Running Tests
+```bash
+php artisan test
+```
+
+### Clearing Caches
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+### Frontend Linting
+If using ESLint or Prettier, you can lint and fix issues:
+```bash
+npm run lint
+```
+
+---
+
+## Contact
+
+For any issues or support, please contact [Your Name/Your Team] at [Your Email].
