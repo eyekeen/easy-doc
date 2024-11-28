@@ -104,29 +104,4 @@ http://localhost:8000
 
 ---
 
-## Additional Commands
 
-### Running Tests
-```bash
-php artisan test
-```
-
-### Clearing Caches
-```bash
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-### Frontend Linting
-If using ESLint or Prettier, you can lint and fix issues:
-```bash
-npm run lint
-```
-
----
-
-## Contact
-
-For any issues or support, please contact [Your Name/Your Team] at [Your Email].
