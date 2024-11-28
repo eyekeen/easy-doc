@@ -84,7 +84,10 @@ class StudentController extends Controller
     public function replaceAndSaveDocument(Request $request, $filename, array $replacements, $template_id)
     {
         try {
+            // $filePath = storage_path('app/public/' . $filename);
             $filePath = storage_path('app/public/' . $filename);
+
+
 
             if (!file_exists($filePath)) {
                 throw new \Exception("Файл не найден: {$filePath}");
@@ -103,6 +106,7 @@ class StudentController extends Controller
             $phpword = new TemplateProcessor($file);
 
             $replacements['sname'] = $request->user()->name;
+
 
             if(isset($replacements['ostart'])){
                 $ostart_date = explode('.', $replacements['ostart']);
@@ -123,7 +127,6 @@ class StudentController extends Controller
 
                 unset($replacements['oend']);
             }
-
 
             $phpword->setValues($replacements);
 
@@ -167,6 +170,7 @@ class StudentController extends Controller
 
             return response()->json(['document_id' => $new_document->id]);
         } catch (\Exception $e) {
+
             \Log::error("Ошибка при загрузке или обработке документа: " . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'filename' => $filename,
