@@ -130,6 +130,11 @@ class DepartmentController extends Controller
             mkdir(storage_path('app/public/ready'));
         }
 
+        $outputDir = storage_path('app/public/ready/');
+            if (!file_exists($outputDir)) {
+                mkdir($outputDir, 0755, true);
+            }
+
         $newFileName = Str::uuid() . '.docx';
         $newFilePath = storage_path('app/public/ready/' . $newFileName);
         $phpWord->save($newFilePath, 'Word2007');
@@ -139,7 +144,7 @@ class DepartmentController extends Controller
         // Пути к файлу, который нужно подписать, и для сохранения подписи
         $documentPath = $newFilePath;
         $signaturePath = storage_path('app/private/' . 'document.sig');
-        $privateKeyPath = storage_path('app/private/' . 'private_key.pem');
+        $privateKeyPath = storage_path('app/private/' . 'private.key');
 
         // Загрузка содержимого документа
         $documentData = file_get_contents($documentPath);

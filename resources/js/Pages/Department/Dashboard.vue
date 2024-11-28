@@ -21,7 +21,7 @@ const electronicSignature = async (applicationId) => {
         })
 
         console.log(response.data)
-        // location.reload()
+        location.reload();
     } catch (error) {
         console.error(error.response ? error.response.data : error.message)
     }
@@ -103,6 +103,8 @@ const closeUploadModal = () => {
     isUploadModalOpen.value = false;
     uploadedFile.value = null; // Clear the uploaded file when closing
     uploadNotes.value = ''; // Clear notes
+
+    location.reload();
 }
 </script>
 
@@ -179,7 +181,7 @@ const closeUploadModal = () => {
                         <div class="bg-white rounded-lg p-6 w-1/3">
                             <h2 class="text-xl font-semibold mb-4">Загрузка скана для Заявки #{{
                                 selectedUploadApplicationId
-                                }}</h2>
+                            }}</h2>
                             <input type="file" @change="handleFileUpload"
                                 class="block w-full mb-4 border border-gray-300 rounded-md" />
                             <textarea v-model="uploadNotes" class="w-full h-24 p-2 border border-gray-300 rounded-md"
